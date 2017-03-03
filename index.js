@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 const ApiMethods = require('./api_methods.js')
 const Middleware  = require('./middleware.js')
 const app = express()
-const port = 80
+const port = 8080
 
 app.use(bodyParser.json())
 
