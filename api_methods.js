@@ -80,15 +80,14 @@ exports.get_all_entries = function (data){
     
     return new Promise( function(resolve,reject){
         var userSecret  = data['userSecret']
-        var url         = data['url']
         var user        = data['user']
         
         var entries = {};
         var dbPromises = [];
-        for( url in data["urls"]){
+        for( i in data["urls"]){
 
             var db_data = {
-                "url" : url,
+                "url" : data["urls"][i],
                 "user": user,
             }
             
@@ -97,11 +96,11 @@ exports.get_all_entries = function (data){
                     "userSecret" : userSecret,
                     "masterSecret" : masterSecret,
                     "encrypted" : data['data'],
-                    "entry_seed" : user + ":" + url
+                    "entry_seed" : user + ":" + db_data["url"]
                 }
                 
                 console.log("Record Retrieved")
-                resolve({ 'url' : url, 'password' : crypto.decrypt(crypto_data) } )
+                resolve({ 'url' : db_data["url"], 'password' : crypto.decrypt(crypto_data) } )
                 
             }).catch(function(data){
                 reject("ERROR ON GET")
