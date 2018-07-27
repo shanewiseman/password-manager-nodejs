@@ -96,11 +96,11 @@ exports.get_all_entries = function (data){
                     "userSecret" : userSecret,
                     "masterSecret" : masterSecret,
                     "encrypted" : data['data'],
-                    "entry_seed" : user + ":" + db_data["url"]
+                    "entry_seed" : data['user'] + ":" + data["url"]
                 }
                 
                 console.log("Record Retrieved")
-                resolve({ 'url' : db_data["url"], 'password' : crypto.decrypt(crypto_data) } )
+                resolve({ 'url' : data["url"], 'password' : crypto.decrypt(crypto_data) } )
                 
             }).catch(function(data){
                 reject("ERROR ON GET")
