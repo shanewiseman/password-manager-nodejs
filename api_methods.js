@@ -76,6 +76,40 @@ exports.get_entry = function (data){
         })
     })
 }
+exports.get_all_entries = function (data){
+    
+    var userSecret  = data['userSecret']
+    var user        = data['user']
+    
+    var dbPromises = [];
+    for( i in data["urls"]){
+
+        var db_data = {
+            "url" : data["urls"][i],
+            "user": user,
+        }
+        
+        promise = db.get_record( db_data ).then(function(data){
+            var crypto_data = {
+                "userSecret" : userSecret,
+                "masterSecret" : masterSecret,
+                "encrypted" : data['data'],
+                "entry_seed" : data['user'] + ":" + data["url"]
+            }
+            
+            console.log("Record Retrieved")
+            return ({ 'url' : data["url"], 'password' : crypto.decrypt(crypto_data) } )
+            
+        }).catch(function(data){
+            reject("ERROR ON GET")
+        })
+
+        dbPromises.push(promise);
+
+    }
+
+    return Promise.all(dbPromises)
+}
 exports.list_entry = function(data){
    
    return new Promise( function(resolve,reject){

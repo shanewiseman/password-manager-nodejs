@@ -97,3 +97,29 @@ exports.get_entryResponse = function( data ){
         resolve({ 'password' : data['password'] } )
     })
 }
+//##############################################################################
+exports.get_entries_Request = function( request ){
+    //var userSecret = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
+    console.log(request.body)
+    //TODO Screen Inputs
+    var rFields = { 'user' : request.body['username'], 'password' : request.body['password'], 'urls' : request.body['urls'] }
+        return new Promise(function(resolve,reject){
+        
+            auth.authenticate_user( { 'user' : rFields['user'], 'password' : rFields['password'] } ).then(function(result){
+                console.log("Entry Middleware")
+                resolve({ 'userSecret' : rFields['password'], 'urls' : rFields['urls'], 'user' : result['uuid']})
+            }).catch(function(result){
+                console.log("Error With Authentication")
+                reject({})
+            })
+        })
+    //return {'userSecret' : userSecret, 'url' : 'boa.com', 'user' : '531c30f6-f92d-11e6-bc64-92361f002671' }
+    
+}
+exports.get_entries_Response = function( data ){
+
+    return new Promise(function(resolve,reject){
+        console.log("Exit Middleware")
+        resolve( data )
+    })
+}

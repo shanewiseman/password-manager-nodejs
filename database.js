@@ -56,7 +56,7 @@ exports.get_record = function(data){
             
             //ensuring we're getting the correct for the user and url
             if(result.rows[0].entry_key == entry_key){
-                resolve({ 'data' : result.rows[0].data })
+                resolve({ 'user': data['user'], 'url' : data['url'], 'data' : result.rows[0].data })
             } else {
                 console.log("Record Confirm Failed")
                 reject({})
