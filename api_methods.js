@@ -81,7 +81,6 @@ exports.get_all_entries = function (data){
     var userSecret  = data['userSecret']
     var user        = data['user']
     
-    var entries = {};
     var dbPromises = [];
     for( i in data["urls"]){
 
@@ -99,7 +98,7 @@ exports.get_all_entries = function (data){
             }
             
             console.log("Record Retrieved")
-            resolve({ 'url' : data["url"], 'password' : crypto.decrypt(crypto_data) } )
+            return ({ 'url' : data["url"], 'password' : crypto.decrypt(crypto_data) } )
             
         }).catch(function(data){
             reject("ERROR ON GET")
@@ -109,9 +108,7 @@ exports.get_all_entries = function (data){
 
     }
 
-    return Promise.all(dbPromises).then(function(values){
-        resolve( values )
-    })
+    return Promise.all(dbPromises)
 }
 exports.list_entry = function(data){
    
