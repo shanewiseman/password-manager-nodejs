@@ -76,6 +76,46 @@ exports.get_entry = function (data){
         })
     })
 }
+exports.get_all_entries = function (data){
+    
+    return new Promise( function(resolve,reject){
+        var userSecret  = data['userSecret']
+        var url         = data['url']
+        var user        = data['user']
+        
+        var entries = {};
+        var dbPromises = [];
+        for( url in data["urls"]){
+
+            var db_data = {
+                "url" : url,
+                "user": user,
+            }
+            
+            promise = db.get_record( db_data ).then(function(data){
+                var crypto_data = {
+                    "userSecret" : userSecret,
+                    "masterSecret" : masterSecret,
+                    "encrypted" : data['data'],
+                    "entry_seed" : user + ":" + url
+                }
+                
+                console.log("Record Retrieved")
+                resolve({ 'url' : url, 'password' : crypto.decrypt(crypto_data) } )
+                
+            }).catch(function(data){
+                reject("ERROR ON GET")
+            })
+
+            dbPromises.push(promise);
+
+        }
+
+        Promise.all(dbPromises).then(function(values){
+            resolve( values )
+        })
+    })
+}
 exports.list_entry = function(data){
    
    return new Promise( function(resolve,reject){

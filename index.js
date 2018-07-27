@@ -48,10 +48,24 @@ app.post('/GET', function( req, resp ){
     }).catch(function(result){
          resp.status(500).end();
     })
-
-    //ApiMethods.get_entry( Middleware.get_entryRequest(req) ).then(function(result){
-    //    resp.json( Middleware.get_entryResponse( result ))
-    //})
+})
+app.post('/GETALL', function( req, resp ){
+    
+    console.log("GET ALL CALLED")
+    Middleware.get_entries_Request(req).then(function(result){
+        ApiMethods.get_all_entries(result).then(function(result){
+            Middleware.get_entries_Response(result).then(function(result){
+                console.log("DONE\n")
+                resp.json(result)
+            }).catch(function(result){
+                resp.status(500).end();
+            })
+        }).catch(function(result){
+            resp.status(500).end();
+        })
+    }).catch(function(result){
+         resp.status(500).end();
+    })
 })
 app.post('/LIST', function( req, resp){
     console.log("LIST CALLED")
