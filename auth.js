@@ -46,13 +46,14 @@ exports.validate_token = function(data){
             ctime = new Date().getTime()
 
             console.log((ctime - t_time) / 1000)
-            if( ctime - t_time < 0 || ctime - t_time > 10 * 1000 ){
+            if( ctime - t_time < 0 || ctime - t_time > (300 * 1000) ){
                 reject("Expired Token Attempted")
             }
             
             computedToken = crypto.create_token(user, userSecret, t_nounce)
 
             if( computedToken == userToken ){
+                console.log("Validated Token")
                 resolve({})
             }else{
                 reject("Token Mismatch")
