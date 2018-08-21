@@ -31,24 +31,6 @@ app.post('/CREATE', function( req, resp ){
   
   
 })
-app.post('/GET', function( req, resp ){
-    
-    console.log("GET CALLED")
-    Middleware.get_entryRequest(req).then(function(result){
-        ApiMethods.get_entry(result).then(function(result){
-            Middleware.get_entryResponse(result).then(function(result){
-                console.log("DONE\n")
-                resp.json(result)
-            }).catch(function(result){
-                resp.status(500).end();
-            })
-        }).catch(function(result){
-            resp.status(500).end();
-        })
-    }).catch(function(result){
-         resp.status(500).end();
-    })
-})
 app.post('/GETALL', function( req, resp ){
     
     console.log("GET ALL CALLED")
