@@ -32,7 +32,27 @@ exports.insert_record = function(data){
 
     })
 }
+exports.insert_token = function(data){
+    
+    return new Promise(function(resolve,reject){
+        
+        var query = "INSERT into password_manager.token_entry (uuid, nounce, time)" +
+            "VALUES (?,?,?);";
+        
+        var values = [data['user'], data['nounce'], data['time'] ]
+        client.execute(query, values, function(err, result) {
+    
+            if(err){
+                console.log(err);
+                reject(err)
+                return
+            }
+            console.log("Created Token Entry")
+            resolve({})
+        });
 
+    })
+}
 exports.get_record = function(data){
     
     return new Promise(function(resolve,reject){
@@ -121,7 +141,5 @@ exports.list_urls = function(data){
             resolve({ 'urls' : urls})
         })
     })
-    
 }
-
 

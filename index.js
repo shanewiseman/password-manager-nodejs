@@ -85,6 +85,24 @@ app.post('/LIST', function( req, resp){
     })
     
 })
+app.post('/GET/TOKEN', function( req, resp){
+    console.log("Generating Token")
+    Middleware.generate_token_Request(req).then(function(result){
+        ApiMethods.generate_token(result).then(function(result){
+            Middleware.generate_token_Response(result).then(function(result){
+                console.log("DONE\n")
+                resp.json(result)
+            }).catch(function(result){
+                resp.status(500).end();
+            })
+        }).catch(function(result){
+            resp.status(500).end();
+        })
+    }).catch(function(result){
+         resp.status(500).end();
+    })
+
+})
 
 
 

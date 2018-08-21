@@ -1,6 +1,9 @@
 var generator = require('generate-password');
 var sha256 = require("sha256")
 
+var masterSecret = '20D8A361ACEE4BF0570C540E6202BA34FE870D30E2BAB802B59F14425F1BA93779FDC6245C7DBEC1CA458D77F4FB802F293B4536E775227560A6EC75EE3AD442'
+
+
 
 var exports = module.exports = {}
 
@@ -8,11 +11,10 @@ var exports = module.exports = {}
 exports.encrypt = function( data ){
     
     var userSecret   = data['userSecret']
-    var masterSecret = data['masterSecret']
     var entry_seed   = data['entry_seed']
     
-    var product = sha256( userSecret  + sha256( masterSecret )) + 
-        sha256(entry_seed + sha256( masterSecret ))
+    var product = sha256( userSecret  + sha256( this.masterSecret )) + 
+        sha256(entry_seed + sha256( this.masterSecret ))
     
     var password = generator.generate({
         length  : data['length'],
@@ -35,24 +37,16 @@ exports.encrypt = function( data ){
         }
     }
     
-    //var temp = '';
-    //for ( var i = 0; i < encrypted.length; i++ ){
-       // temp += String.fromCharCode(encrypted[i])
-    //}
-    
     console.log("ENCRYPTED")
     return {'encrypted' : JSON.stringify(encrypted), 'plaintext' : password }
 }
 
-exports.decrypt = function( data ){
+exports.decrypt = function( userSecret, encrypted, entry_seed){
     
-    var userSecret   = data['userSecret']
-    var masterSecret = data['masterSecret']
     var encrypted    = JSON.parse(data['encrypted'])
-    var entry_seed   = data['entry_seed']
     
-    var product = sha256( userSecret  + sha256( masterSecret )) + 
-        sha256(entry_seed + sha256( masterSecret ))
+    var product = sha256( userSecret  + sha256( this.masterSecret )) + 
+        sha256(entry_seed + sha256( this.masterSecret ))
 
     for( var j = 9; j > 0 ; j-- ){
         for(var i = ( product.length - 1 ); i > -1; i--){

@@ -3,7 +3,6 @@ var db     = require('./database.js')
 var middleware = require('./middleware.js')
 var Promise = require('promise');
 
-var masterSecret = '20D8A361ACEE4BF0570C540E6202BA34FE870D30E2BAB802B59F14425F1BA93779FDC6245C7DBEC1CA458D77F4FB802F293B4536E775227560A6EC75EE3AD442'
 
 exports.create_entry = function(data){
     
@@ -22,7 +21,7 @@ exports.create_entry = function(data){
         "symbols": spec_symbols,
         "uppercase": spec_case,
         "userSecret" : userSecret,
-        "masterSecret" : masterSecret,
+        "masterSecret" : crypto.masterSecret,
         "entry_seed" : user + ":" + url
         
     }
@@ -63,7 +62,7 @@ exports.get_entry = function (data){
         db.get_record( db_data ).then(function(data){
             var crypto_data = {
                 "userSecret" : userSecret,
-                "masterSecret" : masterSecret,
+                "masterSecret" : crypto.masterSecret,
                 "encrypted" : data['data'],
                 "entry_seed" : user + ":" + url
             }
@@ -90,18 +89,13 @@ exports.get_all_entries = function (data){
         }
         
         promise = db.get_record( db_data ).then(function(data){
-            var crypto_data = {
-                "userSecret" : userSecret,
-                "masterSecret" : masterSecret,
-                "encrypted" : data['data'],
-                "entry_seed" : data['user'] + ":" + data["url"]
-            }
             
             console.log("Record Retrieved")
-            return ({ 'url' : data["url"], 'password' : crypto.decrypt(crypto_data) } )
+            return ({ 'url' : data["url"], 'password' : \
+                crypto.decrypt(userSecret, data['data'], data['user'] + ":" + data["url"]) } )
             
         }).catch(function(data){
-            reject("ERROR ON GET")
+            reject("ERROR Record Retrieval")
         })
 
         dbPromises.push(promise);
@@ -129,3 +123,27 @@ exports.list_entry = function(data){
         })
     })  
 }
+exports.generate_token = function(data){
+    return new Promise( function(resolve,reject){
+
+        var user        = data['user']
+        var userSecret  = data['userSecret']
+        var time        = new Date().getTime()
+        var nounce      = sha256(time)
+        var token       = crypto.generate_token(user, userSecret, nounce) 
+
+        var db_data = {
+            "user"   : user,
+            "nounce" : nounce,
+            "time"   : time,
+        }
+
+        db.insert_token(db_data).then(function(data){
+            console.log("Inserted Token For " + user)
+            resolve({ 'token' : data['token'].substr(0,9)})
+        }).catch(function(data){
+            reject("FAILURE TO INSERT TOKEN")
+        })
+
+}
+        

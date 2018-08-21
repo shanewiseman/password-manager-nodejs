@@ -4,7 +4,6 @@ var auth = require('./auth')
 
 exports.list_entryRequest = function( request ){
     //var userSecret = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
-    console.log(request.body)
     //TODO Screen INPUTS
     var rFields = { 'user' : request.body['username'], 'password' : request.body['password'] }
         return new Promise(function(resolve,reject){
@@ -100,14 +99,18 @@ exports.get_entryResponse = function( data ){
 //##############################################################################
 exports.get_entries_Request = function( request ){
     //var userSecret = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
-    console.log(request.body)
     //TODO Screen Inputs
-    var rFields = { 'user' : request.body['username'], 'password' : request.body['password'], 'urls' : request.body['urls'] }
+    var rFields = { 'user' : request.body['username'], 'password' : request.body['password'], 'urls' : request.body['urls'], 'token' : request.body['token']}
         return new Promise(function(resolve,reject){
         
-            auth.authenticate_user( { 'user' : rFields['user'], 'password' : rFields['password'] } ).then(function(result){
+            auth.authenticate_user( { 'user' : rFields['user'], 'password' : rFields['password'] } ).then(function(userResult){
                 console.log("Entry Middleware")
-                resolve({ 'userSecret' : rFields['password'], 'urls' : rFields['urls'], 'user' : result['uuid']})
+                auth.validate_token({ 'user' : rFields['user'], 'userSecret' : rFields['password'], 'token' : rFields['token']}).then(function(tokenResult){
+                    resolve({ 'userSecret' : rFields['password'], 'urls' : rFields['urls'], 'user' : userResult['uuid']})
+                }).catch(function(result){
+                    console.log("Error With Token")
+                    reject({})
+                })
             }).catch(function(result){
                 console.log("Error With Authentication")
                 reject({})
@@ -117,6 +120,28 @@ exports.get_entries_Request = function( request ){
     
 }
 exports.get_entries_Response = function( data ){
+
+    return new Promise(function(resolve,reject){
+        console.log("Exit Middleware")
+        resolve( data )
+    })
+}
+//##############################################################################
+exports.generate_token_Request = function( request ){
+
+    var rFields = { 'user' : request.body['username'], 'password' : request.body['password'] }
+        return new Promise(function(resolve,reject){
+            console.log("Entry Middleware")
+            auth.authenticate_user( { 'user' : rFields['user'], 'password' : rFields['password'] } ).then(
+                    function(result){
+                        resolve({ 'userSecret' : rFields['password'], 'user' : result['uuid']})
+                    }).catch(function(result){
+                        console.log("Error With Authentication")
+                        reject({})
+                    })
+        })
+}
+exports.generate_token_Response = function( data ){
 
     return new Promise(function(resolve,reject){
         console.log("Exit Middleware")
