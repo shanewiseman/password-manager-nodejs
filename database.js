@@ -3,7 +3,7 @@ const uuidV1 = require('uuid/v1');
 var sha256 = require("sha256")
 
 
-var client = new cassandra.Client({contactPoints: ['127.0.0.1:50005'], keyspace: 'password_manager'})
+var client = new cassandra.Client({contactPoints: ['cassandra'], keyspace: 'password_manager'})
 
 
 var exports = module.exports = {}
