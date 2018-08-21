@@ -3,7 +3,7 @@ const uuidV1 = require('uuid/v1');
 var sha256 = require("sha256")
 
 
-var client = new cassandra.Client({contactPoints: ['cassandra'], keyspace: 'password_manager'})
+var client = new cassandra.Client({contactPoints: ['127.0.0.1:50005'], keyspace: 'password_manager'})
 
 
 var exports = module.exports = {}
@@ -32,7 +32,27 @@ exports.insert_record = function(data){
 
     })
 }
+exports.insert_token = function(data){
+    
+    return new Promise(function(resolve,reject){
+        
+        var query = "INSERT into password_manager.token_entry (id, nounce, time)" +
+            "VALUES (?,?,?);";
+        
+        var values = [data['user'], data['nounce'], data['time'] + "" ]
+        client.execute(query, values, function(err, result) {
+    
+            if(err){
+                console.log(err);
+                reject(err)
+                return
+            }
+            console.log("Created Token Entry")
+            resolve({})
+        });
 
+    })
+}
 exports.get_record = function(data){
     
     return new Promise(function(resolve,reject){
@@ -121,7 +141,29 @@ exports.list_urls = function(data){
             resolve({ 'urls' : urls})
         })
     })
-    
 }
-
-
+exports.get_token = function(data){
+    
+    return new Promise(function(resolve,reject){
+        var query = 'SELECT nounce,time from password_manager.token_entry where id=?'
+        
+        client.execute(query, [ data['user'] ], function(err, result){
+            
+            if(err){
+                console.log(err)
+                reject({})
+                return
+            }
+            
+            if(result.rows.length < 1){
+                console.log("No Token Found")
+                reject({})
+                return
+            }
+            
+            console.log("Token FOUND")
+            resolve({ 'nounce': result.rows[0].nounce, 'time' : result.rows[0].time})
+        })
+        
+    })
+}

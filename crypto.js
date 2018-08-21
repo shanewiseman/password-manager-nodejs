@@ -1,6 +1,9 @@
 var generator = require('generate-password');
 var sha256 = require("sha256")
 
+var masterSecret = '20D8A361ACEE4BF0570C540E6202BA34FE870D30E2BAB802B59F14425F1BA93779FDC6245C7DBEC1CA458D77F4FB802F293B4536E775227560A6EC75EE3AD442'
+
+
 
 var exports = module.exports = {}
 
@@ -8,7 +11,6 @@ var exports = module.exports = {}
 exports.encrypt = function( data ){
     
     var userSecret   = data['userSecret']
-    var masterSecret = data['masterSecret']
     var entry_seed   = data['entry_seed']
     
     var product = sha256( userSecret  + sha256( masterSecret )) + 
@@ -35,21 +37,13 @@ exports.encrypt = function( data ){
         }
     }
     
-    //var temp = '';
-    //for ( var i = 0; i < encrypted.length; i++ ){
-       // temp += String.fromCharCode(encrypted[i])
-    //}
-    
     console.log("ENCRYPTED")
     return {'encrypted' : JSON.stringify(encrypted), 'plaintext' : password }
 }
 
-exports.decrypt = function( data ){
+exports.decrypt = function( userSecret, encrypted, entry_seed){
     
-    var userSecret   = data['userSecret']
-    var masterSecret = data['masterSecret']
-    var encrypted    = JSON.parse(data['encrypted'])
-    var entry_seed   = data['entry_seed']
+    var encrypted    = JSON.parse(encrypted)
     
     var product = sha256( userSecret  + sha256( masterSecret )) + 
         sha256(entry_seed + sha256( masterSecret ))
@@ -70,4 +64,7 @@ exports.decrypt = function( data ){
     
     console.log("DECRYPTED")
     return decrypted
+}
+exports.create_token = function(user,c_secret, nounce){
+    return sha256( masterSecret + sha256( user + c_secret + nounce ) ).substr(0,9)
 }
