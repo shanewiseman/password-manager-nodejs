@@ -13,8 +13,8 @@ exports.encrypt = function( data ){
     var userSecret   = data['userSecret']
     var entry_seed   = data['entry_seed']
     
-    var product = sha256( userSecret  + sha256( this.masterSecret )) + 
-        sha256(entry_seed + sha256( this.masterSecret ))
+    var product = sha256( userSecret  + sha256( masterSecret )) + 
+        sha256(entry_seed + sha256( masterSecret ))
     
     var password = generator.generate({
         length  : data['length'],
@@ -43,10 +43,10 @@ exports.encrypt = function( data ){
 
 exports.decrypt = function( userSecret, encrypted, entry_seed){
     
-    var encrypted    = JSON.parse(data['encrypted'])
+    var encrypted    = JSON.parse(encrypted)
     
-    var product = sha256( userSecret  + sha256( this.masterSecret )) + 
-        sha256(entry_seed + sha256( this.masterSecret ))
+    var product = sha256( userSecret  + sha256( masterSecret )) + 
+        sha256(entry_seed + sha256( masterSecret ))
 
     for( var j = 9; j > 0 ; j-- ){
         for(var i = ( product.length - 1 ); i > -1; i--){

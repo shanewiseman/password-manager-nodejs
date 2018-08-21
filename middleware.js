@@ -30,8 +30,6 @@ exports.list_entryResponse = function( data ){
 
 exports.create_entryRequest = function( request ){
     
-    console.log(request.body)
-    
     //TODO need to screen inputs!
     //TODO url should not have spaces!
     var rFields = { 'user' : request.body['username'], 'password' : request.body['password'], 'url' : request.body['url'], 'length' : request.body['length'], 
@@ -72,8 +70,7 @@ exports.create_entryResponse = function( data ){
     })
 }
 exports.get_entryRequest = function( request ){
-    //var userSecret = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
-    console.log(request.body)
+
     //TODO Screen Inputs
     var rFields = { 'user' : request.body['username'], 'password' : request.body['password'], 'url' : request.body['url'] }
         return new Promise(function(resolve,reject){
@@ -105,10 +102,10 @@ exports.get_entries_Request = function( request ){
         
             auth.authenticate_user( { 'user' : rFields['user'], 'password' : rFields['password'] } ).then(function(userResult){
                 console.log("Entry Middleware")
-                auth.validate_token({ 'user' : rFields['user'], 'userSecret' : rFields['password'], 'token' : rFields['token']}).then(function(tokenResult){
+                auth.validate_token({ 'user' : userResult['uuid'], 'userSecret' : rFields['password'], 'token' : rFields['token']}).then(function(tokenResult){
                     resolve({ 'userSecret' : rFields['password'], 'urls' : rFields['urls'], 'user' : userResult['uuid']})
                 }).catch(function(result){
-                    console.log("Error With Token")
+                    console.log("Error With Token: " + result)
                     reject({})
                 })
             }).catch(function(result){

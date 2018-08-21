@@ -142,4 +142,28 @@ exports.list_urls = function(data){
         })
     })
 }
-
+exports.get_token = function(data){
+    
+    return new Promise(function(resolve,reject){
+        var query = 'SELECT nounce,time from password_manager.token_entry where id=?'
+        
+        client.execute(query, [ data['user'] ], function(err, result){
+            
+            if(err){
+                console.log(err)
+                reject({})
+                return
+            }
+            
+            if(result.rows.length < 1){
+                console.log("No Token Found")
+                reject({})
+                return
+            }
+            
+            console.log("Token FOUND")
+            resolve({ 'nounce': result.rows[0].nounce, 'time' : result.rows[0].time})
+        })
+        
+    })
+}

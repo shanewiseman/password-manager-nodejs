@@ -19,7 +19,6 @@ exports.authenticate_user = function(data){
            }
        
        }).catch(function(result){
-           console.log(result)
            console.log("Error Getting User")
            reject({})
        })
@@ -39,19 +38,24 @@ exports.validate_token = function(data){
             "user" : user
         }
 
+
         db.get_token(db_data).then(function(data){
 
             t_nounce = data['nounce']
             t_time   = data['time']
             ctime = new Date().getTime()
 
-            if( ctime - t_time < 0 || ctime - t_time > 30 ){
+            console.log((ctime - t_time) / 1000)
+            if( ctime - t_time < 0 || ctime - t_time > 10 * 1000 ){
                 reject("Expired Token Attempted")
             }
-
+            
             computedToken = crypto.create_token(user, userSecret, t_nounce)
+
             if( computedToken == userToken ){
                 resolve({})
+            }else{
+                reject("Token Mismatch")
             }
         }).catch(function(data){
             reject("Failure To Retrieve Token")

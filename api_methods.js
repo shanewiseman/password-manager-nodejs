@@ -42,7 +42,6 @@ exports.create_entry = function(data){
             console.log("RECORD INSERTED")
             resolve({ 'password' : password['plaintext'] })
         }).catch(function(result){
-            console.log(result)
             reject({})
         })
         
@@ -132,8 +131,6 @@ exports.generate_token = function(data){
         var time        = new Date().getTime()
         var nounce      = sha256(time + "")
         var token       = crypto.create_token(user, userSecret, nounce) 
-        console.log(token)
-
 
         var db_data = {
             "user"   : user,
