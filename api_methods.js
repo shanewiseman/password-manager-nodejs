@@ -91,7 +91,7 @@ exports.get_all_entries = function (data){
         promise = db.get_record( db_data ).then(function(data){
             
             console.log("Record Retrieved")
-            return ({ 'url' : data["url"], 'password' : \
+            return ({ 'url' : data["url"], 'password' : 
                 crypto.decrypt(userSecret, data['data'], data['user'] + ":" + data["url"]) } )
             
         }).catch(function(data){
@@ -145,5 +145,6 @@ exports.generate_token = function(data){
             reject("FAILURE TO INSERT TOKEN")
         })
 
+    })
 }
         

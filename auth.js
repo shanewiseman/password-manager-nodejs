@@ -1,5 +1,5 @@
 var db     = require('./database.js')
-var crypto = require('./crypto.js)
+var crypto = require('./crypto.js')
 var sha256 = require("sha256")
 
 
@@ -53,11 +53,12 @@ exports.validate_token = function(data){
             if( computedToken == userToken ){
                 resolve({})
             }
-        }.catch(function(data)){
+        }).catch(function(data){
             reject("Failure To Retrieve Token")
-        }
+        })
 
-    }
+    })
+
 }
 exports.generate_token = function(user,c_secret, nounce){
     return sha256( crypto.masterSecret + sha256( user + userSecret + t_nounce ) ).substr(0,9)
