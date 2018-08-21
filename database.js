@@ -3,7 +3,7 @@ const uuidV1 = require('uuid/v1');
 var sha256 = require("sha256")
 
 
-var client = new cassandra.Client({contactPoints: ['cassandra'], keyspace: 'password_manager'})
+var client = new cassandra.Client({contactPoints: ['127.0.0.1:50005'], keyspace: 'password_manager'})
 
 
 var exports = module.exports = {}
@@ -36,10 +36,10 @@ exports.insert_token = function(data){
     
     return new Promise(function(resolve,reject){
         
-        var query = "INSERT into password_manager.token_entry (uuid, nounce, time)" +
+        var query = "INSERT into password_manager.token_entry (id, nounce, time)" +
             "VALUES (?,?,?);";
         
-        var values = [data['user'], data['nounce'], data['time'] ]
+        var values = [data['user'], data['nounce'], data['time'] + "" ]
         client.execute(query, values, function(err, result) {
     
             if(err){

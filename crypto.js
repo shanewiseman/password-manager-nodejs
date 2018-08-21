@@ -65,3 +65,6 @@ exports.decrypt = function( userSecret, encrypted, entry_seed){
     console.log("DECRYPTED")
     return decrypted
 }
+exports.create_token = function(user,c_secret, nounce){
+    return sha256( masterSecret + sha256( user + c_secret + nounce ) ).substr(0,9)
+}

@@ -49,7 +49,7 @@ exports.validate_token = function(data){
                 reject("Expired Token Attempted")
             }
 
-            computedToken = generate_token(user, userSecret, t_nounce)
+            computedToken = crypto.create_token(user, userSecret, t_nounce)
             if( computedToken == userToken ){
                 resolve({})
             }

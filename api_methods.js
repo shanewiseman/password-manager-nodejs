@@ -1,7 +1,8 @@
 var crypto = require('./crypto.js')
 var db     = require('./database.js')
 var middleware = require('./middleware.js')
-var Promise = require('promise');
+var Promise = require('promise')
+var sha256 = require('sha256')
 
 
 exports.create_entry = function(data){
@@ -129,8 +130,10 @@ exports.generate_token = function(data){
         var user        = data['user']
         var userSecret  = data['userSecret']
         var time        = new Date().getTime()
-        var nounce      = sha256(time)
-        var token       = crypto.generate_token(user, userSecret, nounce) 
+        var nounce      = sha256(time + "")
+        var token       = crypto.create_token(user, userSecret, nounce) 
+        console.log(token)
+
 
         var db_data = {
             "user"   : user,
@@ -140,7 +143,7 @@ exports.generate_token = function(data){
 
         db.insert_token(db_data).then(function(data){
             console.log("Inserted Token For " + user)
-            resolve({ 'token' : data['token'].substr(0,9)})
+            resolve({ 'token' : token})
         }).catch(function(data){
             reject("FAILURE TO INSERT TOKEN")
         })
